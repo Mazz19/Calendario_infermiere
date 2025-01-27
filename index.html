@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario Condiviso</title>
+    <title>Calendario Turni Infermieri</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,7 +25,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <span class="navbar-brand">
-                    <i class="fas fa-calendar-alt"></i> Calendario Condiviso
+                    <i class="fas fa-calendar-alt"></i> Calendario condiviso
                 </span>
                 <button class="navbar-toggler sidebar-toggler" type="button">
                     <i class="fas fa-bars"></i>
@@ -99,13 +99,16 @@
                 <div class="modal-body">
                     <form id="shiftForm">
                         <div class="mb-3">
+                            <label for="dateSelect" class="form-label">Data</label>
+                            <input type="date" class="form-select" id="dateSelect" required>
+                        </div>
+                        <div class="mb-3">
                             <label for="nurseSelect" class="form-label">Infermiere</label>
                             <select class="form-select" id="nurseSelect" required>
-                                <option value="">Seleziona infermiere...</option>
-                                <option value="F">Fra</option>
-                                <option value="S">Sarah</option>
-                                <option value="L">Lisa</option>
-                                <option value="D">Dome</option>
+                                <option value="Fra">Fra</option>
+                                <option value="Sarah">Sarah</option>
+                                <option value="Lisa">Lisa</option>
+                                <option value="Dome">Dome</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -117,7 +120,6 @@
                                 <option value="N">Notte (N)</option>
                             </select>
                         </div>
-                        <input type="hidden" id="shiftDate">
                     </form>
                 </div>
                 <div class="modal-footer">

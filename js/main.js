@@ -11,12 +11,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const nurseSelect = document.getElementById('nurseSelect');
     const shiftSelect = document.getElementById('shiftSelect');
     const shiftDateInput = document.getElementById('shiftDate');
+    const dateSelect = document.getElementById('dateSelect');
     
+    // Imposta la data minima al giorno corrente
+    const today = new Date().toISOString().split('T')[0];
+    dateSelect.min = today;
+
     // Definiamo la funzione prima di usarla
     async function addNewShift(date, nurse, shiftType) {
         try {
             const shift = {
-                title: `${nurse} - ${shiftType}`,
+                title: `${nurse} - Turno ${shiftType}`,
                 start: date,
                 nurse: nurse,
                 shiftType: shiftType,
@@ -34,19 +39,59 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'it',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth'
+            right: 'dayGridMonth,listWeek'
         },
         height: 'auto',
         selectable: true,
         editable: true,
-        dayMaxEvents: true,
         
+        views: {
+            listWeek: {
+                listDayFormat: { 
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                },
+                listDaySideFormat: false, // Nasconde la data nella colonna laterale
+                displayEventTime: false // Nasconde l'orario degli eventi
+            }
+        },
+
+        // Personalizzazione del contenuto degli eventi
+        eventContent: function(arg) {
+            // Contenuto personalizzato per gli eventi
+            if (arg.view.type === 'dayGridMonth') {
+                return {
+                    html: `
+                        <div class="month-event-content">
+                            <div class="month-event-type">${arg.event.extendedProps.shiftType}</div>
+                            <div class="month-event-nurse">${arg.event.extendedProps.nurse}</div>
+                        </div>
+                    `
+                };
+            } else {
+                // Mantieni il formato esistente per la vista lista
+                return {
+                    html: `
+                        <div class="list-event-container">
+                            <div class="list-event-type type-${arg.event.extendedProps.shiftType}">
+                                ${arg.event.extendedProps.shiftType}
+                            </div>
+                            <div class="list-event-nurse">
+                                ${arg.event.extendedProps.nurse}
+                            </div>
+                        </div>
+                    `
+                };
+            }
+        },
+
         select: function(info) {
             selectedDate = info.startStr;
             shiftDateInput.value = selectedDate;
@@ -87,6 +132,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
                 failureCallback(error);
             }
+        },
+
+        // Aumenta l'altezza delle celle del mese
+        dayCellDidMount: function(arg) {
+            arg.el.style.height = '120px';
         }
     });
 
@@ -96,15 +146,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth <= 768) {
             toggleSidebar();
         }
-        selectedDate = new Date().toISOString().split('T')[0];
-        shiftDateInput.value = selectedDate;
+        dateSelect.value = today;
+        shiftModal.show();
+    });
+
+    // Quando si apre il modale cliccando su un giorno del calendario
+    calendar.on('select', function(info) {
+        dateSelect.value = info.startStr;
         shiftModal.show();
     });
 
     // Gestione del pulsante "Salva" nel modale
     document.getElementById('saveShift').addEventListener('click', () => {
-        if (nurseSelect.value && shiftSelect.value) {
-            addNewShift(shiftDateInput.value, nurseSelect.value, shiftSelect.value);
+        if (dateSelect.value && nurseSelect.value && shiftSelect.value) {
+            addNewShift(dateSelect.value, nurseSelect.value, shiftSelect.value);
         } else {
             alert('Per favore, compila tutti i campi');
         }

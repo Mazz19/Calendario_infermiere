@@ -208,4 +208,347 @@ body {
 .sidebar-card:hover, .calendar-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Stili per la vista settimanale */
+.fc-dayGridWeek-view .fc-daygrid-day-frame {
+    min-height: 150px !important;
+}
+
+.fc-dayGridWeek-view .fc-daygrid-day-number {
+    font-size: 1.1em;
+    font-weight: 500;
+    padding: 8px !important;
+}
+
+.fc-dayGridWeek-view .fc-daygrid-day-header {
+    padding: 8px !important;
+    background-color: #f8f9fa;
+}
+
+/* Responsive per vista settimanale */
+@media (max-width: 768px) {
+    .fc-dayGridWeek-view .fc-daygrid-day-frame {
+        min-height: 100px !important;
+    }
+
+    .fc-dayGridWeek-view .fc-daygrid-day-header {
+        font-size: 0.8em;
+    }
+
+    .fc-dayGridWeek-view .fc-daygrid-day-number {
+        font-size: 0.9em;
+        padding: 4px !important;
+    }
+
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .fc-toolbar-chunk {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .fc-toolbar-chunk:last-child {
+        margin-top: 8px;
+    }
+}
+
+/* Miglioramenti visivi per gli eventi */
+.fc-event {
+    margin: 2px 0;
+    padding: 4px 6px !important;
+    border-radius: 4px !important;
+}
+
+.fc-more-link {
+    font-weight: 500;
+    color: var(--primary-color) !important;
+}
+
+/* Stili per la vista timeGridWeek */
+.fc-timegrid-slot {
+    height: 60px !important; /* Altezza delle celle orarie */
+}
+
+.fc-timegrid-slot-label {
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.fc-timegrid-axis {
+    padding: 10px !important;
+}
+
+.event-content {
+    padding: 4px;
+    height: 100%;
+}
+
+.event-title {
+    font-weight: 500;
+    font-size: 0.9em;
+    margin-bottom: 2px;
+}
+
+.event-type {
+    font-size: 0.8em;
+    opacity: 0.9;
+}
+
+/* Responsive per vista timeGridWeek */
+@media (max-width: 768px) {
+    .fc-timegrid-slot {
+        height: 50px !important;
+    }
+
+    .fc-timegrid-slot-label {
+        font-size: 0.8em;
+    }
+
+    .event-title {
+        font-size: 0.8em;
+    }
+
+    .event-type {
+        font-size: 0.7em;
+    }
+}
+
+/* Stili per le colonne dei giorni */
+.fc-timegrid-col {
+    border-left: 1px solid #ddd !important;
+}
+
+.fc-timegrid-col-header {
+    padding: 10px !important;
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+/* Miglioramenti visivi per gli eventi */
+.fc-timegrid-event {
+    border-radius: 4px !important;
+    margin: 1px !important;
+}
+
+.fc-timegrid-now-indicator-line {
+    border-color: #ff5252 !important;
+}
+
+.fc-timegrid-now-indicator-arrow {
+    border-color: #ff5252 !important;
+    color: #ff5252 !important;
+}
+
+/* Stili per la vista listWeek */
+.fc-list-day-cushion {
+    background-color: #f8f9fa !important;
+    padding: 15px !important;
+}
+
+.fc-list-day-text {
+    font-size: 1.2em !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    text-transform: capitalize;
+}
+
+.fc-list-event {
+    padding: 12px 14px !important;
+    border-bottom: 1px solid #eee !important;
+    cursor: pointer;
+}
+
+.list-event-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.list-event-type {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9em;
+    min-width: 40px;
+    text-align: center;
+    color: white;
+}
+
+.type-M {
+    background-color: #4CAF50;
+}
+
+.type-P {
+    background-color: #2196F3;
+}
+
+.type-N {
+    background-color: #9C27B0;
+}
+
+.list-event-nurse {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Nascondi elementi non necessari */
+.fc-list-day-side-text,
+.fc-list-event-time {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .fc-list-day-text {
+        font-size: 1em !important;
+    }
+
+    .list-event-container {
+        gap: 10px;
+    }
+
+    .list-event-type {
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+
+    .list-event-nurse {
+        font-size: 1em;
+    }
+}
+
+/* Hover effect */
+.fc-list-event:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Stile per il giorno corrente */
+.fc-list-day.fc-day-today .fc-list-day-cushion {
+    background-color: #e8f5e9 !important;
+}
+
+/* Stili per il selettore di data */
+input[type="date"].form-select {
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input[type="date"].form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Stile per dispositivi iOS */
+@supports (-webkit-touch-callout: none) {
+    input[type="date"].form-select {
+        min-height: 38px;
+    }
+}
+
+/* Stili per gli eventi nella vista mensile */
+.fc-daygrid-event {
+    white-space: normal !important; /* Permette il wrap del testo */
+    margin: 3px !important;
+    padding: 4px !important;
+    border: none !important;
+    border-radius: 6px !important;
+}
+
+.month-event-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px;
+}
+
+.month-event-type {
+    font-weight: 600;
+    font-size: 0.9em;
+    min-width: 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.month-event-nurse {
+    font-size: 0.85em;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Aumenta la dimensione delle celle del calendario */
+.fc-daygrid-day-frame {
+    min-height: 100px !important;
+}
+
+/* Migliora la visualizzazione del numero del giorno */
+.fc-daygrid-day-number {
+    font-size: 1em !important;
+    padding: 8px !important;
+    font-weight: 500;
+}
+
+/* Stile per il pulsante "più eventi" */
+.fc-daygrid-more-link {
+    font-weight: 500;
+    color: #666 !important;
+    background: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+/* Responsive per mobile */
+@media (max-width: 768px) {
+    .fc-daygrid-event {
+        margin: 2px !important;
+        padding: 2px !important;
+    }
+
+    .month-event-content {
+        gap: 4px;
+    }
+
+    .month-event-type {
+        font-size: 0.8em;
+        padding: 1px 3px;
+    }
+
+    .month-event-nurse {
+        font-size: 0.75em;
+    }
+
+    .fc-daygrid-day-frame {
+        min-height: 80px !important;
+    }
+}
+
+/* Migliora la visibilità dei colori dei turni */
+.fc-daygrid-event[style*="background-color: #4CAF50"] {
+    background-color: #4CAF50 !important;
+    color: white !important;
+}
+
+.fc-daygrid-event[style*="background-color: #2196F3"] {
+    background-color: #2196F3 !important;
+    color: white !important;
+}
+
+.fc-daygrid-event[style*="background-color: #9C27B0"] {
+    background-color: #9C27B0 !important;
+    color: white !important;
 } 
