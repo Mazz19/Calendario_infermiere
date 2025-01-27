@@ -5,38 +5,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const shiftsCollection = db.collection('shifts');
     const calendarEl = document.getElementById('calendar');
     
+    let selectedDate = null;
+    const shiftModal = new bootstrap.Modal(document.getElementById('shiftModal'));
+    const shiftForm = document.getElementById('shiftForm');
+    const nurseSelect = document.getElementById('nurseSelect');
+    const shiftSelect = document.getElementById('shiftSelect');
+    const shiftDateInput = document.getElementById('shiftDate');
+    
     // Definiamo la funzione prima di usarla
-    async function addNewShift(date) {
-        console.log("Tentativo di aggiungere turno per la data:", date);
+    async function addNewShift(date, nurse, shiftType) {
         try {
-            const nurseName = prompt('Nome dell\'infermiere:');
-            console.log("Nome inserito:", nurseName);
-            
-            if (nurseName) {
-                const shiftType = prompt('Tipo di turno (M=Mattina, P=Pomeriggio, N=Notte):');
-                console.log("Tipo turno inserito:", shiftType);
-                
-                if (shiftType) {
-                    const upperShiftType = shiftType.toUpperCase();
-                    if (['M', 'P', 'N'].includes(upperShiftType)) {
-                        const shift = {
-                            title: `${nurseName} - ${upperShiftType}`,
-                            start: date,
-                            nurse: nurseName,
-                            shiftType: upperShiftType,
-                            color: upperShiftType === 'M' ? '#4CAF50' : 
-                                   upperShiftType === 'P' ? '#2196F3' : '#9C27B0'
-                        };
+            const shift = {
+                title: `${nurse} - ${shiftType}`,
+                start: date,
+                nurse: nurse,
+                shiftType: shiftType,
+                color: shiftType === 'M' ? '#4CAF50' : 
+                       shiftType === 'P' ? '#2196F3' : '#9C27B0'
+            };
 
-                        console.log("Tentativo di salvare il turno:", shift);
-                        await shiftsCollection.add(shift);
-                        calendar.addEvent(shift);
-                        console.log("Turno salvato con successo");
-                    } else {
-                        alert('Tipo turno non valido. Usa M, P o N.');
-                    }
-                }
-            }
+            await shiftsCollection.add(shift);
+            calendar.addEvent(shift);
+            shiftModal.hide();
+            shiftForm.reset();
         } catch (error) {
             console.error("Errore durante il salvataggio:", error);
             alert('Errore nel salvare il turno: ' + error.message);
@@ -57,8 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
         dayMaxEvents: true,
         
         select: function(info) {
-            console.log("Data selezionata:", info.startStr);
-            addNewShift(info.startStr);
+            selectedDate = info.startStr;
+            shiftDateInput.value = selectedDate;
+            shiftModal.show();
         },
 
         eventClick: async function(info) {
@@ -101,9 +93,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gestione del pulsante "Aggiungi Turno"
     const addShiftBtn = document.getElementById('addShiftBtn');
     addShiftBtn.addEventListener('click', () => {
-        console.log("Pulsante Aggiungi Turno cliccato");
-        const today = new Date().toISOString().split('T')[0];
-        addNewShift(today);
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+        selectedDate = new Date().toISOString().split('T')[0];
+        shiftDateInput.value = selectedDate;
+        shiftModal.show();
+    });
+
+    // Gestione del pulsante "Salva" nel modale
+    document.getElementById('saveShift').addEventListener('click', () => {
+        if (nurseSelect.value && shiftSelect.value) {
+            addNewShift(shiftDateInput.value, nurseSelect.value, shiftSelect.value);
+        } else {
+            alert('Per favore, compila tutti i campi');
+        }
     });
 
     // Gestione Sidebar Mobile
@@ -121,14 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
     sidebarToggler.addEventListener('click', toggleSidebar);
     sidebarOverlay.addEventListener('click', toggleSidebar);
     sidebarClose.addEventListener('click', toggleSidebar);
-
-    // Chiudi sidebar quando viene aggiunto un turno su mobile
-    addShiftBtn.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-            toggleSidebar();
-        }
-        // ... resto del codice per aggiungere il turno ...
-    });
 
     // Aggiorna il calendario quando cambia l'orientamento del dispositivo
     window.addEventListener('resize', () => {
