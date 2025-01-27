@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const upperShiftType = shiftType.toUpperCase();
                     if (['M', 'P', 'N'].includes(upperShiftType)) {
                         const shift = {
-                            title: `${nurseName} - Turno ${upperShiftType}`,
+                            title: `${nurseName} - ${upperShiftType}`,
                             start: date,
                             nurse: nurseName,
                             shiftType: upperShiftType,
