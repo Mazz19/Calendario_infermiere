@@ -76,6 +76,24 @@ body {
 .bg-purple {
     background-color: var(--purple-color) !important;
 }
+.bg-orange {
+    margin-right: 10px;
+    width: 30px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    background-color: #d3741c !important;
+}
+.bg-gray {
+    margin-right: 10px;
+    width: 30px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    background-color: #838383 !important;
+}
 
 .btn-primary {
     background-color: var(--primary-color);
@@ -387,6 +405,14 @@ body {
     background-color: #2196F3;
 }
 
+.type-G {
+    background-color: #d3741c;
+}
+
+.type-R {
+    background-color: #838383;
+}
+
 .type-N {
     background-color: #9C27B0;
 }
@@ -545,6 +571,15 @@ input[type="date"].form-select:focus {
 
 .fc-daygrid-event[style*="background-color: #2196F3"] {
     background-color: #2196F3 !important;
+    color: white !important;
+}
+.fc-daygrid-event[style*="background-color: #d3741c"] {
+    background-color: #d3741c !important;
+    color: white !important;
+}
+
+.fc-daygrid-event[style*="background-color: #838383"] {
+    background-color: #838383 !important;
     color: white !important;
 }
 

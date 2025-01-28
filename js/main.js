@@ -25,8 +25,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 start: date,
                 nurse: nurse,
                 shiftType: shiftType,
-                color: shiftType === 'M' ? '#4CAF50' : 
-                       shiftType === 'P' ? '#2196F3' : '#9C27B0'
+                color: shiftType === 'M' ? '#4CAF50' :
+                       shiftType === 'P' ? '#2196F3' :
+                       shiftType === 'R' ? '#838383' :
+                       shiftType === 'G' ? '#d3741c' : '#9C27B0'
             };
 
             await shiftsCollection.add(shift);
