@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
                        shiftType === 'G' ? '#d3741c' : '#9C27B0'
             };
 
-            const docRef = await shiftsCollection.add(shift);
-            shift.id = docRef.id; // Aggiungi l'ID del documento
+            await shiftsCollection.add(shift);
+            calendar.addEvent(shift);
             shiftModal.hide();
             shiftForm.reset();
         } catch (error) {
@@ -113,10 +113,20 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         eventClick: async function(info) {
+            console.log("Evento cliccato:", info.event);
             if (confirm('Vuoi eliminare questo turno?')) {
                 try {
-                    await shiftsCollection.doc(info.event.id).delete();
+                    const querySnapshot = await shiftsCollection
+                        .where('start', '==', info.event.startStr)
+                        .where('nurse', '==', info.event.extendedProps.nurse)
+                        .get();
+                    
+                    querySnapshot.forEach((doc) => {
+                        doc.ref.delete();
+                    });
+
                     info.event.remove();
+                    console.log("Turno eliminato con successo");
                 } catch (error) {
                     console.error("Errore durante l'eliminazione:", error);
                     alert('Errore nell\'eliminare il turno: ' + error.message);
@@ -188,50 +198,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Aggiorna il calendario quando cambia l'orientamento del dispositivo
     window.addEventListener('resize', () => {
         calendar.updateSize();
-    });
-
-    // Funzione per aggiornare il calendario
-    function updateCalendar() {
-        // Rimuovi tutti gli eventi esistenti
-        calendar.removeAllEvents();
-        
-        // Carica gli eventi aggiornati
-        shiftsCollection.get().then((querySnapshot) => {
-            const events = [];
-            querySnapshot.forEach((doc) => {
-                events.push(doc.data());
-            });
-            calendar.addEventSource(events);
-        });
-    }
-
-    // Ascolta i cambiamenti in tempo reale
-    shiftsCollection.onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-                console.log("Nuovo turno aggiunto");
-                calendar.addEvent(change.doc.data());
-            }
-            if (change.type === "modified") {
-                console.log("Turno modificato");
-                // Rimuovi il vecchio evento e aggiungi quello aggiornato
-                const eventData = change.doc.data();
-                const existingEvent = calendar.getEventById(change.doc.id);
-                if (existingEvent) {
-                    existingEvent.remove();
-                }
-                calendar.addEvent({...eventData, id: change.doc.id});
-            }
-            if (change.type === "removed") {
-                console.log("Turno rimosso");
-                const existingEvent = calendar.getEventById(change.doc.id);
-                if (existingEvent) {
-                    existingEvent.remove();
-                }
-            }
-        });
-    }, (error) => {
-        console.error("Errore nell'ascolto dei cambiamenti:", error);
     });
 
     calendar.render();
