@@ -29,28 +29,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateSelect.min = today;
 
-    // Definiamo la funzione prima di usarla
-    async function addNewShift(date, nurse, shiftType) {
-        try {
-            const shift = {
-                title: `${nurse} - Turno ${shiftType}`,
-                start: date,
-                nurse: nurse,
-                shiftType: shiftType,
-                color: shiftType === 'M' ? '#4CAF50' :
-                       shiftType === 'P' ? '#2196F3' :
-                       shiftType === 'R' ? '#838383' :
-                       shiftType === 'G' ? '#d3741c' : '#9C27B0'
-            };
+    let isInitialLoad = true;
 
-            const docRef = await shiftsCollection.add(shift);
-            shift.id = docRef.id; // Aggiungi l'ID del documento
-            shiftModal.hide();
-            shiftForm.reset();
-        } catch (error) {
-            console.error("Errore durante il salvataggio:", error);
-            alert('Errore nel salvare il turno: ' + error.message);
-        }
+    // Funzione per creare un evento con ID univoco
+    function createEventObject(doc) {
+        const data = doc.data();
+        return {
+            id: doc.id,  // Usiamo l'ID del documento Firebase
+            title: data.title,
+            start: data.start,
+            nurse: data.nurse,
+            shiftType: data.shiftType,
+            color: data.color,
+            extendedProps: {
+                nurse: data.nurse,
+                shiftType: data.shiftType
+            }
+        };
     }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -113,10 +108,16 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         eventClick: async function(info) {
+            if (!info.event.id) {
+                console.error("Evento senza ID");
+                return;
+            }
+
             if (confirm('Vuoi eliminare questo turno?')) {
                 try {
                     await shiftsCollection.doc(info.event.id).delete();
-                    info.event.remove();
+                    // Non è necessario rimuovere manualmente l'evento
+                    // verrà gestito dal listener onSnapshot
                 } catch (error) {
                     console.error("Errore durante l'eliminazione:", error);
                     alert('Errore nell\'eliminare il turno: ' + error.message);
@@ -205,34 +206,67 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Ascolta i cambiamenti in tempo reale
+    // Listener in tempo reale ottimizzato
     shiftsCollection.onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-                console.log("Nuovo turno aggiunto");
-                calendar.addEvent(change.doc.data());
-            }
-            if (change.type === "modified") {
-                console.log("Turno modificato");
-                // Rimuovi il vecchio evento e aggiungi quello aggiornato
-                const eventData = change.doc.data();
-                const existingEvent = calendar.getEventById(change.doc.id);
-                if (existingEvent) {
-                    existingEvent.remove();
+        if (isInitialLoad) {
+            // Al primo caricamento, rimuovi tutti gli eventi e aggiungi quelli dal database
+            calendar.removeAllEvents();
+            snapshot.forEach((doc) => {
+                calendar.addEvent(createEventObject(doc));
+            });
+            isInitialLoad = false;
+        } else {
+            // Per gli aggiornamenti successivi, gestisci solo i cambiamenti
+            snapshot.docChanges().forEach((change) => {
+                const eventData = createEventObject(change.doc);
+
+                if (change.type === "added" && !isInitialLoad) {
+                    console.log("Nuovo turno aggiunto:", eventData.id);
+                    calendar.addEvent(eventData);
                 }
-                calendar.addEvent({...eventData, id: change.doc.id});
-            }
-            if (change.type === "removed") {
-                console.log("Turno rimosso");
-                const existingEvent = calendar.getEventById(change.doc.id);
-                if (existingEvent) {
-                    existingEvent.remove();
+                if (change.type === "modified") {
+                    console.log("Turno modificato:", eventData.id);
+                    const existingEvent = calendar.getEventById(eventData.id);
+                    if (existingEvent) {
+                        existingEvent.remove();
+                        calendar.addEvent(eventData);
+                    }
                 }
-            }
-        });
+                if (change.type === "removed") {
+                    console.log("Turno rimosso:", eventData.id);
+                    const existingEvent = calendar.getEventById(eventData.id);
+                    if (existingEvent) {
+                        existingEvent.remove();
+                    }
+                }
+            });
+        }
     }, (error) => {
         console.error("Errore nell'ascolto dei cambiamenti:", error);
     });
+
+    // Funzione addNewShift aggiornata
+    async function addNewShift(date, nurse, shiftType) {
+        try {
+            const shift = {
+                title: `${nurse} - Turno ${shiftType}`,
+                start: date,
+                nurse: nurse,
+                shiftType: shiftType,
+                color: shiftType === 'M' ? '#4CAF50' :
+                       shiftType === 'P' ? '#2196F3' :
+                       shiftType === 'R' ? '#838383' :
+                       shiftType === 'G' ? '#d3741c' : '#9C27B0'
+            };
+
+            await shiftsCollection.add(shift);
+            shiftModal.hide();
+            shiftForm.reset();
+        } catch (error) {
+            console.error("Errore durante il salvataggio:", error);
+            alert('Errore nel salvare il turno: ' + error.message);
+        }
+    }
 
     calendar.render();
     console.log("Calendario renderizzato");
