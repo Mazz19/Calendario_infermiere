@@ -31,8 +31,12 @@ document.addEventListener('DOMContentLoaded', function() {
                        shiftType === 'G' ? '#d3741c' : '#9C27B0'
             };
 
+            // Salva su Firebase ma NON aggiungere l'evento al calendario
             await shiftsCollection.add(shift);
-            calendar.addEvent(shift);
+            
+            // Ricarica tutti gli eventi dal database
+            calendar.refetchEvents();
+            
             shiftModal.hide();
             shiftForm.reset();
         } catch (error) {
