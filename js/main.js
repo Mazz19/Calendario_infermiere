@@ -1,17 +1,7 @@
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-                console.log('ServiceWorker registrato con successo:', registration.scope);
-            })
-            .catch((error) => {
-                console.log('Registrazione ServiceWorker fallita:', error);
-            });
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM caricato");
+    
+    // Riferimento alla collezione 'shifts' su Firestore
     const shiftsCollection = db.collection('shifts');
     const calendarEl = document.getElementById('calendar');
     
@@ -27,11 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     dateSelect.min = today;
 
-    let isInitialLoad = true;
-
-    // Funzione per aggiungere un nuovo turno
+    // Definiamo la funzione prima di usarla
     async function addNewShift(date, nurse, shiftType) {
-        console.log("Tentativo di aggiungere turno:", date, nurse, shiftType);
         try {
             const shift = {
                 title: `${nurse} - Turno ${shiftType}`,
@@ -45,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             await shiftsCollection.add(shift);
+            calendar.addEvent(shift);
             shiftModal.hide();
             shiftForm.reset();
         } catch (error) {
@@ -53,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    let calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'it',
         headerToolbar: {
@@ -62,11 +50,25 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,listWeek'
         },
         height: 'auto',
+        contentHeight: '600',
         selectable: true,
         editable: true,
-        dayMaxEvents: true,
+        
+        views: {
+            listWeek: {
+                listDayFormat: { 
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                },
+                listDaySideFormat: false, // Nasconde la data nella colonna laterale
+                displayEventTime: false // Nasconde l'orario degli eventi
+            }
+        },
 
+        // Personalizzazione del contenuto degli eventi
         eventContent: function(arg) {
+            // Contenuto personalizzato per gli eventi
             if (arg.view.type === 'dayGridMonth') {
                 return {
                     html: `
@@ -77,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `
                 };
             } else {
+                // Mantieni il formato esistente per la vista lista
                 return {
                     html: `
                         <div class="list-event-container">
@@ -93,43 +96,51 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         select: function(info) {
-            dateSelect.value = info.startStr;
+            selectedDate = info.startStr;
+            shiftDateInput.value = selectedDate;
             shiftModal.show();
         },
 
         eventClick: async function(info) {
-            const eventId = info.event.extendedProps.docId;
-            if (eventId && confirm('Vuoi eliminare questo turno?')) {
+            console.log("Evento cliccato:", info.event);
+            if (confirm('Vuoi eliminare questo turno?')) {
                 try {
-                    await shiftsCollection.doc(eventId).delete();
+                    const querySnapshot = await shiftsCollection
+                        .where('start', '==', info.event.startStr)
+                        .where('nurse', '==', info.event.extendedProps.nurse)
+                        .get();
+                    
+                    querySnapshot.forEach((doc) => {
+                        doc.ref.delete();
+                    });
+
+                    info.event.remove();
+                    console.log("Turno eliminato con successo");
                 } catch (error) {
                     console.error("Errore durante l'eliminazione:", error);
                     alert('Errore nell\'eliminare il turno: ' + error.message);
                 }
             }
-        }
-    });
+        },
 
-    // Carica iniziale degli eventi
-    function loadEvents() {
-        calendar.removeAllEvents();
-        shiftsCollection.get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                calendar.addEvent({
-                    ...data,
-                    extendedProps: {
-                        ...data,
-                        docId: doc.id
-                    }
+        // Carica gli eventi all'avvio
+        events: async function(info, successCallback, failureCallback) {
+            try {
+                const querySnapshot = await shiftsCollection.get();
+                const events = [];
+                querySnapshot.forEach((doc) => {
+                    events.push(doc.data());
                 });
-            });
-        });
-    }
+                successCallback(events);
+            } catch (error) {
+                failureCallback(error);
+            }
+        },
 
-    // Ascolta i cambiamenti
-    shiftsCollection.onSnapshot(() => {
-        loadEvents();
+        // Aumenta l'altezza delle celle del mese
+        dayCellDidMount: function(arg) {
+            arg.el.style.height = '120px';
+        }
     });
 
     // Gestione del pulsante "Aggiungi Turno"
@@ -138,12 +149,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth <= 768) {
             toggleSidebar();
         }
-        const today = new Date().toISOString().split('T')[0];
         dateSelect.value = today;
         shiftModal.show();
     });
 
-    // Gestione del form
+    // Quando si apre il modale cliccando su un giorno del calendario
+    calendar.on('select', function(info) {
+        dateSelect.value = info.startStr;
+        shiftModal.show();
+    });
+
+    // Gestione del pulsante "Salva" nel modale
     document.getElementById('saveShift').addEventListener('click', () => {
         if (dateSelect.value && nurseSelect.value && shiftSelect.value) {
             addNewShift(dateSelect.value, nurseSelect.value, shiftSelect.value);
@@ -174,13 +190,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();
-    loadEvents();
-
-    document.getElementById('refreshBtn').addEventListener('click', function() {
-        // Aggiungiamo una classe per l'animazione
-        this.classList.add('rotating');
-        
-        // Ricarichiamo la pagina
-        window.location.reload();
-    });
+    console.log("Calendario renderizzato");
 });
