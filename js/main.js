@@ -175,4 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();
     loadEvents();
+
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        // Aggiungiamo una classe per l'animazione
+        this.classList.add('rotating');
+        
+        // Ricarichiamo la pagina
+        window.location.reload();
+    });
 });

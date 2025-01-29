@@ -586,4 +586,27 @@ input[type="date"].form-select:focus {
 .fc-daygrid-event[style*="background-color: #9C27B0"] {
     background-color: #9C27B0 !important;
     color: white !important;
+}
+
+/* Stile per il pulsante refresh */
+#refreshBtn {
+    padding: 8px 12px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+#refreshBtn:active {
+    transform: rotate(180deg);
+}
+
+#refreshBtn i {
+    font-size: 1.2em;
 } 
