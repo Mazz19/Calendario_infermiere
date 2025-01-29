@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,listWeek'
         },
         height: 'auto',
-        contentHeight: '600',
         selectable: true,
         editable: true,
         
@@ -70,20 +69,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 
-        // Personalizzazione del contenuto degli eventi
         eventContent: function(arg) {
-            // Contenuto personalizzato per gli eventi
+            // Verifica se siamo su mobile
+            const isMobile = window.innerWidth < 768;
+            
             if (arg.view.type === 'dayGridMonth') {
-                return {
-                    html: `
-                        <div class="month-event-content">
-                            <div class="month-event-type">${arg.event.extendedProps.shiftType}</div>
-                            <div class="month-event-nurse">${arg.event.extendedProps.nurse}</div>
-                        </div>
-                    `
-                };
+                // Usa una versione più compatta per mobile
+                if (isMobile) {
+                    return {
+                        html: `
+                            <div class="month-event-content mobile">
+                                <div class="month-event-type">${arg.event.extendedProps.shiftType}</div>
+                                <div class="month-event-nurse">${arg.event.extendedProps.nurse.split(' ')[0]}</div>
+                            </div>
+                        `
+                    };
+                } else {
+                    // Versione desktop normale
+                    return {
+                        html: `
+                            <div class="month-event-content">
+                                <div class="month-event-type">${arg.event.extendedProps.shiftType}</div>
+                                <div class="month-event-nurse">${arg.event.extendedProps.nurse}</div>
+                            </div>
+                        `
+                    };
+                }
             } else {
-                // Mantieni il formato esistente per la vista lista
+                // Vista lista (invariata)
                 return {
                     html: `
                         <div class="list-event-container">
@@ -97,6 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     `
                 };
             }
+        },
+    
+        // Imposta un limite di eventi visibili per giorno su mobile
+        dayMaxEvents: function() {
+            return window.innerWidth < 768 ? 4 : true;
         },
 
         select: function(info) {
