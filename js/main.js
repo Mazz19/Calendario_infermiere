@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 color: shiftType === 'M' ? '#4CAF50' :
                        shiftType === 'P' ? '#2196F3' :
                        shiftType === 'R' ? '#838383' :
-                       shiftType === 'G' ? '#d3741c' : '#9C27B0'
+                       shiftType === 'G' ? '#d3741c' :
+                       shiftType === 'REP' ? '#ff0000' : '#9C27B0'
             };
 
             // Salva su Firebase ma NON aggiungere l'evento al calendario

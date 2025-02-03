@@ -3,6 +3,7 @@
     --success-color: #4CAF50;
     --primary-dark: #2196F3;
     --purple-color: #9C27B0;
+    --red-color: #ff0000;
     --background-color: #f8f9fa;
     --card-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 }
@@ -84,6 +85,15 @@ body {
     justify-content: center;
     font-size: 0.9rem;
     background-color: #d3741c !important;
+}
+.bg-orange {
+    margin-right: 10px;
+    width: 30px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    background-color: #ff0000 !important;
 }
 .bg-gray {
     margin-right: 10px;
@@ -415,6 +425,10 @@ body {
 
 .type-N {
     background-color: #9C27B0;
+}
+
+.type-RE {
+    background-color: #ff0000;
 }
 
 .list-event-nurse {
