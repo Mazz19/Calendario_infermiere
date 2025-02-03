@@ -77,7 +77,8 @@ body {
 .bg-purple {
     background-color: var(--purple-color) !important;
 }
-.bg-orange {
+
+.bg-red {
     margin-right: 10px;
     width: 30px;
     height: 25px;
@@ -86,6 +87,7 @@ body {
     font-size: 0.9rem;
     background-color: #d3741c !important;
 }
+
 .bg-orange {
     margin-right: 10px;
     width: 30px;
@@ -95,6 +97,7 @@ body {
     font-size: 0.9rem;
     background-color: #ff0000 !important;
 }
+
 .bg-gray {
     margin-right: 10px;
     width: 30px;
@@ -427,7 +430,7 @@ body {
     background-color: #9C27B0;
 }
 
-.type-RE {
+.type-REP {
     background-color: #ff0000;
 }
 
